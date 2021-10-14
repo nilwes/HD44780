@@ -1,2 +1,2 @@
 # HD44780
-Toit driver for the HD7780 LCD controller
+Toit driver for the HD44780 LCD controller
