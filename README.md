@@ -6,7 +6,7 @@ Toit driver for the HD44780 LCD controller. The driver works with 16x2 LCDs.
 A simple usage example.
 
 ```
-import HD44780
+import hd44780
 
 main:
   ...
