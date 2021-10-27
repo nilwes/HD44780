@@ -36,11 +36,12 @@ d5_pin_ := 0
 d6_pin_ := 0
 d7_pin_ := 0
 
-/// Deprecated.
+/// Deprecated. Use $lcd_init instead.
 LCDinit RS/int EN/int D4/int D5/int D6/int D7/int cursor_enabled/int cursor_blink/int -> none:
   lcd_init RS EN D4 D5 D6 D7 --cursor_enabled=(cursor_enabled == 1) --cursor_blink=(cursor_blink == 1)
 
 /**
+Initializes the driver.
 Takes incoming GPIO pins and assigns them to corresponding variables.
 It also initializes the HD44780 to 4-bit mode, 2 rows with 5x8 pixel characters.
 The cursor can be either:
@@ -72,13 +73,13 @@ lcd_init RS/int EN/int D4/int D5/int D6/int D7/int --cursor_enabled/bool=false -
   else if not cursor_enabled:
     write_byte_ CURSOR_OFF_ LCD_CMD_                    // Turn on display, no cursor
 
-/// Deprecated.
+/// Deprecated. Use $lcd_write instead.
 LCDwrite str row/int col/int -> none:
   lcd_write str row col
 
 /**
 Writes the given string or byte array to the LCD at the given position.
-For strings, only the ASCII range will work, since no translation of
+For strings, only the ASCII range works, since no translation of
   character codes is performed.
 For non-ASCII strings a call to $translate_to_rom_a_00 can be used to
   preprocess the string.
@@ -92,8 +93,7 @@ lcd_write str row/int col/int -> none:
   else:
     throw "Error: Only two line displays are supported"
 
-  for i := 0 ; i < str.size ; i += 1:
-    write_byte_ str[i] LCD_DATA_
+  str.do: write_byte_ it LCD_DATA_
 
 write_byte_ bits mode:
   rs_pin_.set mode // Data mode: 1 for Data, 0 for Instructions
@@ -131,7 +131,7 @@ write_byte_ bits mode:
 
   strobe_
 
-/// Deprecated.
+/// Deprecated. Use $lcd_shift_cursor instead.
 LCDshiftCursor direction/string steps/int -> none:
   if direction == "right":
     lcd_shift_cursor --right steps
@@ -145,13 +145,13 @@ lcd_shift_cursor --right/bool=true steps/int -> none:
   if steps < 0:
     steps = -steps
     right = not right
-  for i := 0 ; i < steps ; i++:
+  steps.repeat:
     if right:
       write_byte_ (LCD_SHIFT_ | LCD_CURSOR_ | LCD_RIGHT_) LCD_CMD_
     else:
       write_byte_ (LCD_SHIFT_ | LCD_CURSOR_ | LCD_LEFT_)  LCD_CMD_
 
-/// Deprecated.
+/// Deprecated. Use $lcd_shift_display instead.
 LCDshiftDisplay direction/string steps/int -> none:
   if direction == "right":
     lcd_shift_display --right steps
@@ -165,15 +165,15 @@ lcd_shift_display --right/bool=true steps/int -> none:
   if steps < 0:
     steps = -steps
     right = not right
-  for i := 0 ; i < steps ; i += 1:
+  steps.repeat:
     if right:
       write_byte_ (LCD_SHIFT_ | LCD_DISPLAY_ | LCD_RIGHT_) LCD_CMD_
     else:
       write_byte_ (LCD_SHIFT_ | LCD_DISPLAY_ | LCD_LEFT_)  LCD_CMD_
 
-/// Deprecated
+/// Deprecated. Use $lcd_cursor_home instead.
 LCDcursorHome:
-  write_byte_ RETURN_HOME_ LCD_CMD_ // Cursor home
+  lcd_cursor_home
 
 /**
 Move cursor back to the home position.
@@ -181,12 +181,12 @@ Move cursor back to the home position.
 lcd_cursor_home -> none:
   write_byte_ RETURN_HOME_ LCD_CMD_ // Cursor home
 
-/// Deprecated
+/// Deprecated. Use $lcd_place_cursor instead.
 LCDplaceCursor row/int col/int -> none:
   lcd_place_cursor row col
 
 /**
-Move cursor to a given position.
+Moves the cursor to the given position.
 */
 lcd_place_cursor row/int col/int -> none:
   // Place cursor
@@ -197,9 +197,9 @@ lcd_place_cursor row/int col/int -> none:
   else:
     throw "Error: Only two line displays are supported"
 
-/// Deprecated.
+/// Deprecated. Use $lcd_clear instead.
 LCDclear:
-  write_byte_ DISP_CLEAR_ LCD_CMD_ // Clear LCD
+  lcd_clear
 
 lcd_clear -> none:
   write_byte_ DISP_CLEAR_ LCD_CMD_ // Clear LCD
@@ -211,7 +211,7 @@ strobe_: //Clock in the instruction
   sleep --ms=1
 
 /**
-Translate a Unicode string to a series of bytes.
+Translates a Unicode string to a series of bytes.
 The character mapping corresponds to the ROM code A00, which is ASCII with some
   Katakana and some Western European characters.
 If $with_descenders is true, then the prettier characters with descenders are
@@ -219,7 +219,7 @@ If $with_descenders is true, then the prettier characters with descenders are
   lower line if used on the upper line.
 If the input string contains Unicode characters that are not supported by the
   display then the block is called.  It is given an integer Unicode code point
-  and should return a list of bytes or a string contains only supported characters.
+  and should return a list of bytes or a string that contains only supported characters.
 */
 translate_to_rom_a_00 input/string --with_descenders/bool=false [on_unsupported] -> ByteArray:
   buffer := Buffer
@@ -230,7 +230,7 @@ translate_to_rom_a_00 input/string --with_descenders/bool=false [on_unsupported]
   return buffer.bytes
 
 /**
-Translate a Unicode string to a series of bytes.
+Translates a Unicode string to a series of bytes.
 The character mapping corresponds to the ROM code A00, which is ASCII with some
   Katakana and some Western European characters.
 If $with_descenders is true, then the prettier characters with descenders are
