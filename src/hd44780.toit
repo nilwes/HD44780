@@ -145,11 +145,9 @@ lcd_shift_cursor --right/bool=true steps/int -> none:
   if steps < 0:
     steps = -steps
     right = not right
+  direction := right ? LCD_RIGHT_ : LCD_LEFT_
   steps.repeat:
-    if right:
-      write_byte_ (LCD_SHIFT_ | LCD_CURSOR_ | LCD_RIGHT_) LCD_CMD_
-    else:
-      write_byte_ (LCD_SHIFT_ | LCD_CURSOR_ | LCD_LEFT_)  LCD_CMD_
+    write_byte_ (LCD_SHIFT_ | LCD_CURSOR_ | direction) LCD_CMD_
 
 /// Deprecated. Use $lcd_shift_display instead.
 LCDshiftDisplay direction/string steps/int -> none:
@@ -165,11 +163,9 @@ lcd_shift_display --right/bool=true steps/int -> none:
   if steps < 0:
     steps = -steps
     right = not right
+  direction := right ? LCD_RIGHT_ : LCD_LEFT_
   steps.repeat:
-    if right:
-      write_byte_ (LCD_SHIFT_ | LCD_DISPLAY_ | LCD_RIGHT_) LCD_CMD_
-    else:
-      write_byte_ (LCD_SHIFT_ | LCD_DISPLAY_ | LCD_LEFT_)  LCD_CMD_
+    write_byte_ (LCD_SHIFT_ | LCD_DISPLAY_ | direction) LCD_CMD_
 
 /// Deprecated. Use $lcd_cursor_home instead.
 LCDcursorHome:
