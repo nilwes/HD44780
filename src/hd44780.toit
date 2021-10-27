@@ -6,42 +6,42 @@ import binary
 import bytes show Buffer
 import gpio
 
-LCD_DATA        ::=   1 // ...if writing text to display
-LCD_CMD         ::=   0 // ...if sending instructions to display
+LCD_DATA_        ::=   1 // ...if writing text to display
+LCD_CMD_         ::=   0 // ...if sending instructions to display
 
-INIT_SEQ_1      ::=   0x33
-INIT_SEQ_2      ::=   0x32
-TWO_ROWS_5BY8   ::=   0x28 // Command for 2 row display with 5x8 pixel characters
-DISP_OFF        ::=   0x08
-DISP_ON         ::=   0x0F // Display on with blinking cursor
-CURSOR_NOBLINK  ::=   0x0E
-CURSOR_OFF      ::=   0x0C
-INC_AND_SCROLL  ::=   0x06 // Increment cursor automatically
-DISP_CLEAR      ::=   0x01
-RETURN_HOME     ::=   0x02
+INIT_SEQ_1_      ::=   0x33
+INIT_SEQ_2_      ::=   0x32
+TWO_ROWS_5BY8_   ::=   0x28 // Command for 2 row display with 5x8 pixel characters
+DISP_OFF_        ::=   0x08
+DISP_ON_         ::=   0x0F // Display on with blinking cursor
+CURSOR_NOBLINK_  ::=   0x0E
+CURSOR_OFF_      ::=   0x0C
+INC_AND_SCROLL_  ::=   0x06 // Increment cursor automatically
+DISP_CLEAR_      ::=   0x01
+RETURN_HOME_     ::=   0x02
 
-LCD_SHIFT       ::=   0x10
-LCD_CURSOR      ::=   0x00
-LCD_DISPLAY     ::=   0x08
-LCD_LEFT        ::=   0x00
-LCD_RIGHT       ::=   0x04
+LCD_SHIFT_       ::=   0x10
+LCD_CURSOR_      ::=   0x00
+LCD_DISPLAY_     ::=   0x08
+LCD_LEFT_        ::=   0x00
+LCD_RIGHT_       ::=   0x04
 
-LCD_LINE_1      ::=   0x80 // LCD RAM address for the 1st line
-LCD_LINE_2      ::=   0xC0 // LCD RAM address for the 2nd line
+LCD_LINE_1_      ::=   0x80 // LCD RAM address for the 1st line
+LCD_LINE_2_      ::=   0xC0 // LCD RAM address for the 2nd line
 
-RSpin := 0
-ENpin := 0
-D4pin := 0
-D5pin := 0
-D6pin := 0
-D7pin := 0
+rs_pin_ := 0
+en_pin_ := 0
+d4_pin_ := 0
+d5_pin_ := 0
+d6_pin_ := 0
+d7_pin_ := 0
 
 /// Deprecated.
 LCDinit RS/int EN/int D4/int D5/int D6/int D7/int cursor_enabled/int cursor_blink/int -> none:
   lcd_init RS EN D4 D5 D6 D7 --cursor_enabled=(cursor_enabled == 1) --cursor_blink=(cursor_blink == 1)
 
 /**
-Takes incoming GPIO pins and assigns them to corresponding variables. 
+Takes incoming GPIO pins and assigns them to corresponding variables.
 It also initializes the HD44780 to 4-bit mode, 2 rows with 5x8 pixel characters.
 The cursor can be either:
 Off.
@@ -50,27 +50,27 @@ On, blinking.
 */
 lcd_init RS/int EN/int D4/int D5/int D6/int D7/int --cursor_enabled/bool=false --cursor_blink/bool=false -> none:
   //Assign incoming pins
-  RSpin = RS 
-  ENpin = EN
-  D4pin = D4 
-  D5pin = D5
-  D6pin = D6
-  D7pin = D7
+  rs_pin_ = RS
+  en_pin_ = EN
+  d4_pin_ = D4
+  d5_pin_ = D5
+  d6_pin_ = D6
+  d7_pin_ = D7
 
   // Default initialization: 4-bit mode, 2 rows, with 5x8 pixel characters, blinking cursor at position (0,0)
-  write_byte_ INIT_SEQ_1     LCD_CMD // Initialize and set to 4-bit mode
-  write_byte_ INIT_SEQ_2     LCD_CMD
-  write_byte_ TWO_ROWS_5BY8  LCD_CMD // Initializes 2 rows and 5x8 pixel characters
-  write_byte_ DISP_ON        LCD_CMD // Turn on display, with blinking cursor
-  write_byte_ INC_AND_SCROLL LCD_CMD // Mode: Cursor increment and no scroll of display
-  write_byte_ DISP_CLEAR     LCD_CMD // Clear LCD
-  write_byte_ RETURN_HOME    LCD_CMD // Cursor home
+  write_byte_ INIT_SEQ_1_     LCD_CMD_ // Initialize and set to 4-bit mode
+  write_byte_ INIT_SEQ_2_     LCD_CMD_
+  write_byte_ TWO_ROWS_5BY8_  LCD_CMD_ // Initializes 2 rows and 5x8 pixel characters
+  write_byte_ DISP_ON_        LCD_CMD_ // Turn on display, with blinking cursor
+  write_byte_ INC_AND_SCROLL_ LCD_CMD_ // Mode: Cursor increment and no scroll of display
+  write_byte_ DISP_CLEAR_     LCD_CMD_ // Clear LCD
+  write_byte_ RETURN_HOME_    LCD_CMD_ // Cursor home
   if cursor_enabled and cursor_blink:
-    write_byte_ DISP_ON LCD_CMD                       // Turn on display, with blinking cursor
+    write_byte_ DISP_ON_ LCD_CMD_                       // Turn on display, with blinking cursor
   else if cursor_enabled and not cursor_blink:
-    write_byte_ CURSOR_NOBLINK LCD_CMD                // Turn on display, no cursor blink
+    write_byte_ CURSOR_NOBLINK_ LCD_CMD_                // Turn on display, no cursor blink
   else if not cursor_enabled:
-    write_byte_ CURSOR_OFF LCD_CMD                    // Turn on display, no cursor
+    write_byte_ CURSOR_OFF_ LCD_CMD_                    // Turn on display, no cursor
 
 /// Deprecated.
 LCDwrite str row/int col/int -> none:
@@ -86,48 +86,48 @@ For non-ASCII strings a call to $translate_to_rom_a_00 can be used to
 lcd_write str row/int col/int -> none:
   // Place cursor
   if row == 0:
-    write_byte_ (LCD_LINE_1 + col) LCD_CMD
+    write_byte_ (LCD_LINE_1_ + col) LCD_CMD_
   else if row == 1:
-    write_byte_ (LCD_LINE_2 + col) LCD_CMD
+    write_byte_ (LCD_LINE_2_ + col) LCD_CMD_
   else:
     throw "Error: Only two line displays are supported"
 
   for i := 0 ; i < str.size ; i += 1:
-    write_byte_ str[i] LCD_DATA
+    write_byte_ str[i] LCD_DATA_
 
 write_byte_ bits mode:
-  RSpin.set mode // Data mode: 1 for Data, 0 for Instructions
-  ENpin.set 0    //Ensure clock is low initially
+  rs_pin_.set mode // Data mode: 1 for Data, 0 for Instructions
+  en_pin_.set 0    //Ensure clock is low initially
 
   //Upper nibble
-  D7pin.set 0
-  D6pin.set 0
-  D5pin.set 0
-  D4pin.set 0
+  d7_pin_.set 0
+  d6_pin_.set 0
+  d5_pin_.set 0
+  d4_pin_.set 0
   if bits & 0x80 == 0x80:
-    D7pin.set 1
+    d7_pin_.set 1
   if bits & 0x40 == 0x40:
-    D6pin.set 1
+    d6_pin_.set 1
   if bits & 0x20 == 0x20:
-    D5pin.set 1
+    d5_pin_.set 1
   if bits & 0x10 == 0x10:
-    D4pin.set 1
+    d4_pin_.set 1
 
   strobe_
 
   //Lower nibble
-  D7pin.set 0
-  D6pin.set 0
-  D5pin.set 0
-  D4pin.set 0
+  d7_pin_.set 0
+  d6_pin_.set 0
+  d5_pin_.set 0
+  d4_pin_.set 0
   if bits & 0x08 == 0x08:
-    D7pin.set 1
+    d7_pin_.set 1
   if bits & 0x04 == 0x04:
-    D6pin.set 1
+    d6_pin_.set 1
   if bits & 0x02 == 0x02:
-    D5pin.set 1
+    d5_pin_.set 1
   if bits & 0x01 == 0x01:
-    D4pin.set 1
+    d4_pin_.set 1
 
   strobe_
 
@@ -147,9 +147,9 @@ lcd_shift_cursor --right/bool=true steps/int -> none:
     right = not right
   for i := 0 ; i < steps ; i++:
     if right:
-      write_byte_ (LCD_SHIFT | LCD_CURSOR | LCD_RIGHT) LCD_CMD
+      write_byte_ (LCD_SHIFT_ | LCD_CURSOR_ | LCD_RIGHT_) LCD_CMD_
     else:
-      write_byte_ (LCD_SHIFT | LCD_CURSOR | LCD_LEFT)  LCD_CMD
+      write_byte_ (LCD_SHIFT_ | LCD_CURSOR_ | LCD_LEFT_)  LCD_CMD_
 
 /// Deprecated.
 LCDshiftDisplay direction/string steps/int -> none:
@@ -165,21 +165,21 @@ lcd_shift_display --right/bool=true steps/int -> none:
   if steps < 0:
     steps = -steps
     right = not right
-  for i := 0 ; i < steps ; i += 1: 
+  for i := 0 ; i < steps ; i += 1:
     if right:
-      write_byte_ (LCD_SHIFT | LCD_DISPLAY | LCD_RIGHT) LCD_CMD
+      write_byte_ (LCD_SHIFT_ | LCD_DISPLAY_ | LCD_RIGHT_) LCD_CMD_
     else:
-      write_byte_ (LCD_SHIFT | LCD_DISPLAY | LCD_LEFT)  LCD_CMD
+      write_byte_ (LCD_SHIFT_ | LCD_DISPLAY_ | LCD_LEFT_)  LCD_CMD_
 
 /// Deprecated
 LCDcursorHome:
-  write_byte_ RETURN_HOME LCD_CMD // Cursor home
+  write_byte_ RETURN_HOME_ LCD_CMD_ // Cursor home
 
 /**
 Move cursor back to the home position.
 */
 lcd_cursor_home -> none:
-  write_byte_ RETURN_HOME LCD_CMD // Cursor home
+  write_byte_ RETURN_HOME_ LCD_CMD_ // Cursor home
 
 /// Deprecated
 LCDplaceCursor row/int col/int -> none:
@@ -191,23 +191,23 @@ Move cursor to a given position.
 lcd_place_cursor row/int col/int -> none:
   // Place cursor
   if row == 0:
-    write_byte_ (LCD_LINE_1 + col) LCD_CMD
+    write_byte_ (LCD_LINE_1_ + col) LCD_CMD_
   else if row == 1:
-    write_byte_ (LCD_LINE_2 + col) LCD_CMD
+    write_byte_ (LCD_LINE_2_ + col) LCD_CMD_
   else:
     throw "Error: Only two line displays are supported"
 
 /// Deprecated.
 LCDclear:
-  write_byte_ DISP_CLEAR LCD_CMD // Clear LCD
+  write_byte_ DISP_CLEAR_ LCD_CMD_ // Clear LCD
 
 lcd_clear -> none:
-  write_byte_ DISP_CLEAR LCD_CMD // Clear LCD
+  write_byte_ DISP_CLEAR_ LCD_CMD_ // Clear LCD
 
 strobe_: //Clock in the instruction
-  ENpin.set 1
+  en_pin_.set 1
   sleep --ms=1
-  ENpin.set 0
+  en_pin_.set 0
   sleep --ms=1
 
 /**
@@ -306,7 +306,7 @@ unicode_to_1602_ c/int --with_descenders/bool=false [on_unsupported]-> ByteArray
   if c == 'ε'          : return #[0xe3]  // Greek epsilon lower case.
   if c == 'µ'          : return #[0xe4]  // Greek mu lower case.
   if c == 'σ'          : return #[0xe5]  // Greek sigma lower case.
-  if c == 'ρ'          : return #[0xe6]  // Greek rho lower case. 
+  if c == 'ρ'          : return #[0xe6]  // Greek rho lower case.
                            //   #[0xe7]  // g with descender.
   if c == '√'          : return #[0xe8]  // Square root.
                            //   #[0xe9]  // Superscript -1
