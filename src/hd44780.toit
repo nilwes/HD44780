@@ -37,7 +37,7 @@ d6_pin_ := 0
 d7_pin_ := 0
 
 /// Deprecated. Use $lcd_init instead.
-LCDinit RS/int EN/int D4/int D5/int D6/int D7/int cursor_enabled/int cursor_blink/int -> none:
+LCDinit RS EN D4 D5 D6 D7 cursor_enabled/int cursor_blink/int -> none:
   lcd_init RS EN D4 D5 D6 D7 --cursor_enabled=(cursor_enabled == 1) --cursor_blink=(cursor_blink == 1)
 
 /**
