@@ -329,6 +329,7 @@ unicode_to_1602_ c/int --with_descenders/bool=false [on_unsupported]-> ByteArray
   if c == '÷'          : return #[0xfd]  // Division symbol.
                            //   #[0xfe]  // Unused.
   if c == '█'          : return #[0xff]  // Solid block.
+  if c == '°'          : return #[0xdf]  // Degree sign.
   fixed := on_unsupported.call c
   if fixed is string:
     return unicode_to_1602_ c: throw "String still unsupported after calling on_unsupported"
