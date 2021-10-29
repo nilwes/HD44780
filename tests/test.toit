@@ -55,14 +55,22 @@ main:
     #[0xc4, 0xc4, 0xde]
     translate_to_rom_a_00 "トド"
 
+  ho_bo_po_expected := #[0xce, 0xce, 0xde, 0xce, 0xdf]
+
   // Ho-bo-po is three times 0xce with following marks.
   expect_bytes_equal
-    #[0xce, 0xce, 0xde, 0xce, 0xdf]
+    ho_bo_po_expected
     translate_to_rom_a_00 "ホボポ"
+
+  // Ho-bo-po using combining unicode diacriticals
+  ho_bo_po := "ホホ\u{309b}ホ\u{309c}"
+  expect_bytes_equal
+    ho_bo_po_expected
+    translate_to_rom_a_00 ho_bo_po
 
   // The same in the half-width Katakana Unicode block.
   expect_bytes_equal
-    #[0xce, 0xce, 0xde, 0xce, 0xdf]
+    ho_bo_po_expected
     translate_to_rom_a_00 "ﾎﾎﾞﾎﾟ"
 
   // Half-width ASCII
