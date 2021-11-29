@@ -49,7 +49,7 @@ Off.
 On, but not blinking.
 On, blinking.
 */
-lcd_init RS/int EN/int D4/int D5/int D6/int D7/int --cursor_enabled/bool=false --cursor_blink/bool=false -> none:
+lcd_init RS EN D4 D5 D6 D7 --cursor_enabled/bool=false --cursor_blink/bool=false -> none:
   //Assign incoming pins
   rs_pin_ = RS
   en_pin_ = EN
