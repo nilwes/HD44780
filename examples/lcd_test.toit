@@ -13,36 +13,35 @@ D6pin := gpio.Pin.out 16
 D7pin := gpio.Pin.out 15
 
 main:
-  lcd_init RSpin ENpin D4pin D5pin D6pin D7pin --cursor_blink=false --cursor_enabled=false // Submit pins, and 0 0 for no cursor, no blink
-  lcd_write  "toit" 0 6        // Write text on first line, third column
-  sleep --ms=3000                     // Sleep for 3 secs
+  lcd_init RSpin ENpin D4pin D5pin D6pin D7pin --cursor_blink=false --cursor_enabled=false
+  lcd_write  "toit" 0 6        // Write text on first line, 7th column
+  sleep --ms=3000                     
 
   2.repeat:
-    lcd_shift_display --right=false 1   // Shift entire display two places to the left
+    lcd_shift_display --right=false 1 
     sleep --ms=200
   5.repeat:
-    lcd_shift_display --right=true 1   // Shift entire display five places to the right
+    lcd_shift_display --right=true 1  
     sleep --ms=200
   3.repeat:
-    lcd_shift_display --right=false 1   // Shift entire display two places to the left
+    lcd_shift_display --right=false 1 
     sleep --ms=200
   
-  sleep --ms=1000
+  sleep --ms=1000  
   
-  
-  lcd_write  "like a toiger" 1 1        // Write text on first line, third column
-  sleep --ms=2000                     // Sleep for 3 secs
+  lcd_write  "like a toiger" 1 1     
+  sleep --ms=2000                    
 
   5.repeat:
-    lcd_shift_display --right=true 1   // Shift entire display five places to the right
+    lcd_shift_display --right=true 1 
     sleep --ms=200
   7.repeat:
-    lcd_shift_display --right=false 1   // Shift entire display five places to the right
+    lcd_shift_display --right=false 1
     sleep --ms=200
   2.repeat:
-    lcd_shift_display --right=true 1   // Shift entire display five places to the right
+    lcd_shift_display --right=true 1 
     sleep --ms=200
 
   sleep --ms=2000
-  lcd_clear                           // Clear display
+  lcd_clear                          
   
