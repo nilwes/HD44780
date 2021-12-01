@@ -14,8 +14,8 @@ D7pin := gpio.Pin.out 15
 
 main:
   lcd_init RSpin ENpin D4pin D5pin D6pin D7pin --cursor_blink=false --cursor_enabled=false
-  lcd_write  "toit" 0 6        // Write text on first line, 7th column
-  sleep --ms=3000                     
+  lcd_write  (translate_to_rom_a_00 "→toit←") 0 5        // Write text on first line, 6th column
+  sleep --ms=2000                                        // Special characters requires translate_to_rom_a_00
 
   2.repeat:
     lcd_shift_display --right=false 1 
@@ -38,7 +38,7 @@ main:
   7.repeat:
     lcd_shift_display --right=false 1
     sleep --ms=200
-  2.repeat:
+  3.repeat:
     lcd_shift_display --right=true 1 
     sleep --ms=200
 
