@@ -13,11 +13,13 @@ D6pin := gpio.Pin.out 16
 D7pin := gpio.Pin.out 15
 
 main:
-
   display := hd44780  
-  display.lcd_init RSpin ENpin D4pin D5pin D6pin D7pin --cursor_blink=false --cursor_enabled=false
-  display.lcd_write  (display.translate_to_rom_a_00 "→toit←") 0 5        // Write text on first line, 6th column
-  sleep --ms=2000                                        // Special characters requires translate_to_rom_a_00
+
+  display.lcd_init RSpin ENpin D4pin D5pin D6pin D7pin --lcd_type="20x4" --cursor_blink=false --cursor_enabled=false
+
+  display.lcd_write  (display.translate_to_rom_a_00 "→toit←") 2 5  // Write text on third line, 6th column.
+
+  sleep --ms=2000                                                  // Special characters requires call to method translate_to_rom_a_00.
 
   2.repeat:
     display.lcd_shift_display --right=false 1 
@@ -37,7 +39,7 @@ main:
   5.repeat:
     display.lcd_shift_display --right=true 1 
     sleep --ms=200
-  7.repeat:
+  6.repeat:
     display.lcd_shift_display --right=false 1
     sleep --ms=200
   3.repeat:
