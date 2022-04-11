@@ -1,0 +1,5 @@
+prefixes:
+  hd44780: ..
+packages:
+  ..:
+    path: ..
