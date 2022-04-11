@@ -1,0 +1,3 @@
+dependencies:
+  hd44780:
+    path: ..
