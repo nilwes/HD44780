@@ -6,17 +6,17 @@ Toit driver for the HD44780 LCD controller. The driver works with 16x2 and 20x4 
 A simple usage example.
 
 ```
-import hd44780
+import hd44780 show *
 
 main:
   ...
-  display := hd44780
-  display.lcd_write "Hello World!" 0 0
+  display := Hd44780
+  display.write "Hello World!"
 ```
 For special characters you may need to call `translate_to_rom_a_00`
 ```
-text := display.translate_to_rom_a_00 "100°C"
-display.lcd_write text 0 0
+text := Hd44780.translate_to_rom_a_00 "100°C"
+display.write --row=0 --column=0 text
 ```
 
 See the `examples` folder for more examples.
