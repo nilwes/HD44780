@@ -3,8 +3,8 @@
 // in the LICENSE file.
 
 import binary
-import bytes show Buffer
 import gpio
+import io
 
 class Hd44780:
 
@@ -89,12 +89,12 @@ class Hd44780:
       --type /int = LCD-16x2:
     if type != LCD-16x2 and type != LCD-20x4: throw "INVALID_LCD_TYPE"
 
-    rs.config --output
-    en.config --output
-    d4.config --output
-    d5.config --output
-    d6.config --output
-    d7.config --output
+    rs.configure --output
+    en.configure --output
+    d4.configure --output
+    d5.configure --output
+    d6.configure --output
+    d7.configure --output
 
     rs.set 0
     en.set 0
@@ -273,11 +273,11 @@ class Hd44780:
     and should return a list of bytes or a string that contains only supported characters.
   */
   static translate-to-rom-a-00 input/string --with-descenders/bool=false [on-unsupported] -> ByteArray:
-    buffer := Buffer
+    buffer := io.Buffer
     input.do: | c |
       if c:
-        buffer.write
-          unicode-to-1602_ c --with-descenders=with-descenders on-unsupported
+        converted := unicode-to-1602_ c --with-descenders=with-descenders on-unsupported
+        buffer.write converted
     return buffer.bytes
 
   /**
