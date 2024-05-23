@@ -2,4 +2,4 @@ name: hd44780
 description: Driver for the HD44780 LCD controller.
 
 environment:
-  sdk: ^2.0.0-alpha.100
+  sdk: ^2.0.0-alpha.144
