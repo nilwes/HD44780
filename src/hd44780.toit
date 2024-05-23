@@ -8,11 +8,11 @@ import gpio
 
 class Hd44780:
 
-  static LCD_16x2 ::= 1
-  static LCD_20x4 ::= 2
+  static LCD-16x2 ::= 1
+  static LCD-20x4 ::= 2
 
-  static LCD_DATA_ ::=   1 // To write text to the display.
-  static LCD_CMD_  ::=   0 // To send instructions to the display.
+  static LCD-DATA_ ::=   1 // To write text to the display.
+  static LCD-CMD_  ::=   0 // To send instructions to the display.
 
   /**
   This command sequence initializes the display to a 4-bit mode.
@@ -33,23 +33,23 @@ class Hd44780:
     command.
 
   If the display is in 4-bit mode, waiting for the second nibble, then the first
-    nibble of $INIT_SEQ_1_ sends a 0x3 nibble, which finishes some command.
-    The second nibble of the $INIT_SEQ_1_ starts a new command which is finished with the
-    first nibble of the $INIT_SEQ_2_ yielding a full 0x33 command. Finally, the second
-    nibble of the $INIT_SEQ_2_ is interpreted as 0x20 putting the display into 4-bit mode.
+    nibble of $INIT-SEQ-1_ sends a 0x3 nibble, which finishes some command.
+    The second nibble of the $INIT-SEQ-1_ starts a new command which is finished with the
+    first nibble of the $INIT-SEQ-2_ yielding a full 0x33 command. Finally, the second
+    nibble of the $INIT-SEQ-2_ is interpreted as 0x20 putting the display into 4-bit mode.
   */
-  static INIT_SEQ_1_      ::=   0x33
-  static INIT_SEQ_2_      ::=   0x32
+  static INIT-SEQ-1_      ::=   0x33
+  static INIT-SEQ-2_      ::=   0x32
 
-  static TWO_ROWS_5BY8_   ::=   0x28 // Command for 2 row display with 5x8 pixel characters.
-  static INC_AND_SCROLL_  ::=   0x06 // Increment cursor automatically.
-  static DISP_CLEAR_      ::=   0x01
-  static RETURN_HOME_     ::=   0x02
+  static TWO-ROWS-5BY8_   ::=   0x28 // Command for 2 row display with 5x8 pixel characters.
+  static INC-AND-SCROLL_  ::=   0x06 // Increment cursor automatically.
+  static DISP-CLEAR_      ::=   0x01
+  static RETURN-HOME_     ::=   0x02
 
-  static DISPLAY_CURSOR_CMD_BIT_ ::= 0b1000
-  static DISPLAY_ON_BIT_         ::= 0b0100
-  static CURSOR_ON_BIT_          ::= 0b0010
-  static CURSOR_BLINK_BIT_       ::= 0b0001
+  static DISPLAY-CURSOR-CMD-BIT_ ::= 0b1000
+  static DISPLAY-ON-BIT_         ::= 0b0100
+  static CURSOR-ON-BIT_          ::= 0b0010
+  static CURSOR-BLINK-BIT_       ::= 0b0001
 
   static SHIFT_   ::=   0x10
   static CURSOR_  ::=   0x00
@@ -57,10 +57,10 @@ class Hd44780:
   static LEFT_    ::=   0x00
   static RIGHT_   ::=   0x04
 
-  static LINE_1_ ::=   0x80 // LCD RAM address for the 1st line.
-  static LINE_2_ ::=   0xC0 // LCD RAM address for the 2nd line.
-  static LINE_3_ ::=   0x94 // LCD RAM address for the 3rd line.
-  static LINE_4_ ::=   0xD4 // LCD RAM address for the 4th line.
+  static LINE-1_ ::=   0x80 // LCD RAM address for the 1st line.
+  static LINE-2_ ::=   0xC0 // LCD RAM address for the 2nd line.
+  static LINE-3_ ::=   0x94 // LCD RAM address for the 3rd line.
+  static LINE-4_ ::=   0xD4 // LCD RAM address for the 4th line.
 
   rs_ /gpio.Pin
   en_ /gpio.Pin
@@ -73,8 +73,8 @@ class Hd44780:
   /**
   Creates and initializes the display.
   The $type must be one of:
-  - $LCD_16x2, or
-  - $LCD_20x4
+  - $LCD-16x2, or
+  - $LCD-20x4
 
   Turns on the display, but disables the cursor.
   See $cursor for how to enable it.
@@ -86,8 +86,8 @@ class Hd44780:
       --d5 /gpio.Pin
       --d6 /gpio.Pin
       --d7 /gpio.Pin
-      --type /int = LCD_16x2:
-    if type != LCD_16x2 and type != LCD_20x4: throw "INVALID_LCD_TYPE"
+      --type /int = LCD-16x2:
+    if type != LCD-16x2 and type != LCD-20x4: throw "INVALID_LCD_TYPE"
 
     rs.config --output
     en.config --output
@@ -112,10 +112,10 @@ class Hd44780:
     type_ = type
 
     // Default initialization: 4-bit mode, 2 rows, with 5x8 pixel characters.
-    write_command_ INIT_SEQ_1_      // Initialize and set to 4-bit mode.
-    write_command_ INIT_SEQ_2_
-    write_command_ TWO_ROWS_5BY8_   // Initializes 2 rows and 5x8 pixel characters.
-    write_command_ INC_AND_SCROLL_  // Mode: Cursor increment and no scroll of display.
+    write-command_ INIT-SEQ-1_      // Initialize and set to 4-bit mode.
+    write-command_ INIT-SEQ-2_
+    write-command_ TWO-ROWS-5BY8_   // Initializes 2 rows and 5x8 pixel characters.
+    write-command_ INC-AND-SCROLL_  // Mode: Cursor increment and no scroll of display.
     on
     clear
     cursor --home
@@ -126,13 +126,13 @@ class Hd44780:
   Use $cursor to initialize the cursor.
   */
   on:
-    write_command_ DISPLAY_CURSOR_CMD_BIT_ | DISPLAY_ON_BIT_
+    write-command_ DISPLAY-CURSOR-CMD-BIT_ | DISPLAY-ON-BIT_
 
   /**
   Turns the display off.
   */
   off:
-    write_command_ DISPLAY_CURSOR_CMD_BIT_
+    write-command_ DISPLAY-CURSOR-CMD-BIT_
 
   /**
   Configures the cursor.
@@ -144,60 +144,60 @@ class Hd44780:
   The display is always turned on when calling this function.
   */
   cursor --on/bool=true --off/bool=(not on) --blinking/bool=false:
-    command := DISPLAY_CURSOR_CMD_BIT_ | DISPLAY_ON_BIT_
-    if off:           write_command_ command
+    command := DISPLAY-CURSOR-CMD-BIT_ | DISPLAY-ON-BIT_
+    if off:           write-command_ command
     else if blinking:
-      command |= CURSOR_BLINK_BIT_
-      write_command_ command
+      command |= CURSOR-BLINK-BIT_
+      write-command_ command
     else:
-      command |= CURSOR_ON_BIT_
-      write_command_ command
+      command |= CURSOR-ON-BIT_
+      write-command_ command
 
   /**
   Moves the cursor back to the home position.
   */
   cursor --home -> none:
-    write_command_ RETURN_HOME_
+    write-command_ RETURN-HOME_
 
   /**
   Moves the cursor right or left by the given number of steps.
   */
-  shift_cursor --left/bool=false --right/bool=(not left) steps/int=1 -> none:
+  shift-cursor --left/bool=false --right/bool=(not left) steps/int=1 -> none:
     if steps < 0:
       steps = -steps
       right = not right
     direction := right ? RIGHT_ : LEFT_
     steps.repeat:
-      write_command_ (SHIFT_ | CURSOR_ | direction)
+      write-command_ (SHIFT_ | CURSOR_ | direction)
 
   /**
   Moves the text on the display right or left by the given number of steps.
   */
-  shift_display --left/bool=false --right/bool=(not left) steps/int=1 -> none:
+  shift-display --left/bool=false --right/bool=(not left) steps/int=1 -> none:
     if steps < 0:
       steps = -steps
       right = not right
     direction := right ? RIGHT_ : LEFT_
     steps.repeat:
-      write_command_ (SHIFT_ | DISPLAY_ | direction)
+      write-command_ (SHIFT_ | DISPLAY_ | direction)
 
   /**
   Clears the display.
   */
   clear -> none:
-    write_command_ DISP_CLEAR_
+    write-command_ DISP-CLEAR_
 
   /**
   Writes the given string or byte array.
 
   For strings, only the ASCII range works, since no translation of
     character codes is performed.
-  For non-ASCII strings a call to $translate_to_rom_a_00 can be used to
+  For non-ASCII strings a call to $translate-to-rom-a-00 can be used to
     preprocess the string.
   */
   write str:
     str.do:
-      write_data_ it
+      write-data_ it
 
   /**
   Variant of $(write str).
@@ -205,7 +205,7 @@ class Hd44780:
   Places the cursor at $row and $column before emitting the string.
   */
   write str --row/int --column/int:
-    place_cursor row column
+    place-cursor row column
     write str
 
   /**
@@ -213,30 +213,30 @@ class Hd44780:
 
   Rows and columns are 0-indexed.
   */
-  place_cursor row/int column/int -> none:
-    if type_ == LCD_16x2:
+  place-cursor row/int column/int -> none:
+    if type_ == LCD-16x2:
       if not (0 <= row <= 1 and 0 <= column <= 15): throw "INVALID_ROW_COLUMN"
-    else if type_ == LCD_20x4:
+    else if type_ == LCD-20x4:
       if not (0 <= row <= 4 and 0 <= column <= 20): throw "INVALID_ROW_COLUMN"
     else:
       unreachable
 
     command := ?
-    if row == 0:      command = LINE_1_
-    else if row == 1: command = LINE_2_
-    else if row == 2: command = LINE_3_
-    else:             command = LINE_4_
+    if row == 0:      command = LINE-1_
+    else if row == 1: command = LINE-2_
+    else if row == 2: command = LINE-3_
+    else:             command = LINE-4_
 
     command += column
-    write_command_ command
+    write-command_ command
 
-  write_command_ byte:
-    write_byte_ byte LCD_CMD_
+  write-command_ byte:
+    write-byte_ byte LCD-CMD_
 
-  write_data_ byte:
-    write_byte_ byte LCD_DATA_
+  write-data_ byte:
+    write-byte_ byte LCD-DATA_
 
-  write_byte_ bits mode:
+  write-byte_ bits mode:
     rs_.set mode // Data mode: 1 for Data, 0 for Instructions.
     en_.set 0    // Ensure clock is low initially.
 
@@ -265,19 +265,19 @@ class Hd44780:
 
   The character mapping corresponds to the ROM code A00, which is ASCII with some
     Katakana and some Western European characters.
-  If $with_descenders is true, then the prettier characters with descenders are
+  If $with-descenders is true, then the prettier characters with descenders are
     preferred for 'g', 'j', 'p', 'q', and 'y'.  These can get too close to the
     lower line if used on the upper line.
   If the input string contains Unicode characters that are not supported by the
     display then the block is called.  It is given an integer Unicode code point
     and should return a list of bytes or a string that contains only supported characters.
   */
-  static translate_to_rom_a_00 input/string --with_descenders/bool=false [on_unsupported] -> ByteArray:
+  static translate-to-rom-a-00 input/string --with-descenders/bool=false [on-unsupported] -> ByteArray:
     buffer := Buffer
     input.do: | c |
       if c:
         buffer.write
-          unicode_to_1602_ c --with_descenders=with_descenders on_unsupported
+          unicode-to-1602_ c --with-descenders=with-descenders on-unsupported
     return buffer.bytes
 
   /**
@@ -285,24 +285,24 @@ class Hd44780:
 
   The character mapping corresponds to the ROM code A00, which is ASCII with some
     Katakana and some Western European characters.
-  If $with_descenders is true, then the prettier characters with descenders are
+  If $with-descenders is true, then the prettier characters with descenders are
     preferred for 'g', 'j', 'p', 'q', and 'y'.  These can get too close to the
     lower line if used on the upper line.
   If the input string contains Unicode characters that are not supported by the
     display then it throws an exception.
   */
-  static translate_to_rom_a_00 input/string --with_descenders/bool=false -> ByteArray:
-    return translate_to_rom_a_00 input --with_descenders=with_descenders:
+  static translate-to-rom-a-00 input/string --with-descenders/bool=false -> ByteArray:
+    return translate-to-rom-a-00 input --with-descenders=with-descenders:
       throw "Unsupported code point: $it ('$(%c it)')"
 
-  static unicode_to_1602_ c/int --with_descenders/bool=false [on_unsupported]-> ByteArray:
+  static unicode-to-1602_ c/int --with-descenders/bool=false [on-unsupported]-> ByteArray:
     if 0xff01 <= c <= 0xff5d:
       c += 0x21 - 0xff01  // Translate from halfwidth Roman Katakana range to ASCII range.
 
     code   := 0
     accent := 0
 
-    if with_descenders and 'g' <= c <= 'y':
+    if with-descenders and 'g' <= c <= 'y':
       index := c - 'g'
       // Use a binary mask with 1's where there are descenders.
         //  yxwvutsrqponmlkjihg
@@ -311,19 +311,19 @@ class Hd44780:
       else:
         code = c
     else if c < 0x100:
-      code = LATIN_1_TABLE_[c]
+      code = LATIN-1-TABLE_[c]
     else if 0xff61 <= c <= 0xff9f:
       // Half-width Katakana range maps directly.
       code = c - 0xff61 + 0xa1
     else if 0x3000 <= c <= 0x300d:
-      code = JAPANESE_PUNCTUATION_TABLE_[c - 0x3000]
+      code = JAPANESE-PUNCTUATION-TABLE_[c - 0x3000]
     else if 0x309b <= c <= 0x30ff:
       // Map full width Katakana.
-      code = KATAKANA_TABLE_[c - 0x309b]
+      code = KATAKANA-TABLE_[c - 0x309b]
       if code != 0:
-        accent = DIACRITIC_TABLE_[c - 0x309b]
+        accent = DIACRITIC-TABLE_[c - 0x309b]
     else if 'Σ' <= c <= 'σ':
-      code = GREEK_TABLE_[c - 'Σ']
+      code = GREEK-TABLE_[c - 'Σ']
     else if c == '→' or c == '￫':
       code = 0x7e
     else if c == '←' or c == '￩':
@@ -350,12 +350,12 @@ class Hd44780:
         return #[code, accent]
       return #[code]
 
-    fixed := on_unsupported.call c
+    fixed := on-unsupported.call c
     if fixed is string:
-      return translate_to_rom_a_00 fixed: throw "String still unsupported after calling on_unsupported"
+      return translate-to-rom-a-00 fixed: throw "String still unsupported after calling on_unsupported"
     return fixed as ByteArray
 
-  static LATIN_1_TABLE_ ::= #[
+  static LATIN-1-TABLE_ ::= #[
       0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     // 0x00
       0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     // 0x10
       0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,  // 0x20
@@ -373,7 +373,7 @@ class Hd44780:
       0,    0,    0,    0,    0xe1, 0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     // 0xe0
       0,    0xee, 0,    0,    0,    0,    0xef, 0xfd, 0,    0,    0,    0,    0xf5, 0,    0,    0x00]  // 0xf0
 
-  static KATAKANA_TABLE_ ::= #[
+  static KATAKANA-TABLE_ ::= #[
                                                                         0xde, 0xdf, 0,    0,    0,     // 0x3090
       0,    0xa7, 0xb1, 0xa8, 0xb2, 0xa9, 0xb3, 0xaa, 0xb4, 0xab, 0xb5, 0xb6, 0xb6, 0xb7, 0xb7, 0xb8,  // 0x30a0
       0xb8, 0xb9, 0xb9, 0xba, 0xba, 0xbb, 0xbb, 0xbc, 0xbc, 0xbd, 0xbd, 0xbe, 0xbe, 0xbf, 0xbf, 0xc0,  // 0x30b0
@@ -383,7 +383,7 @@ class Hd44780:
       0,    0,    0xa6, 0xdd, 0,    0,    0,    0,    0,    0,    0,    0xa5, 0xb0, 0,    0,    0x00]  // 0x30f0
 
   // Dakuten and handakuten.
-  static DIACRITIC_TABLE_ ::= #[
+  static DIACRITIC-TABLE_ ::= #[
                                                                         0,    0,    0,    0,    0,     // 0x3090
       0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0xde, 0,    0xde, 0,     // 0x30A0
       0xde, 0,    0xde, 0,    0xde, 0,    0xde, 0,    0xde, 0,    0xde, 0,    0xde, 0,    0xde, 0,     // 0x30B0
@@ -392,9 +392,9 @@ class Hd44780:
       0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     // 0x30E0
       0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0x00]  // 0x30F0
 
-  static JAPANESE_PUNCTUATION_TABLE_ ::= #[0, 0xa4, 0xa1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xa2, 0xa3]
+  static JAPANESE-PUNCTUATION-TABLE_ ::= #[0, 0xa4, 0xa1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xa2, 0xa3]
 
-  static GREEK_TABLE_ ::= #[
+  static GREEK-TABLE_ ::= #[
                   0xf6,       0,    0,    0, 0, // 0x03a3-0x3a7      Σ....
       0,    0xf4, 0,    0,    0,    0,    0, 0, // 0x03a8-0x03af  .Ω......
       0,    0xe0, 0xe2, 0,    0,    0xe3, 0, 0, // 0x03b0-0x03b7  .αβ..ε..
