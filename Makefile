@@ -17,5 +17,5 @@
 test:
 	@for TEST in tests/*test.toit; do \
 		echo "Running $$TEST"; \
-	  toit.run $$TEST || exit 1; \
+	  toit "$$TEST" || exit 1; \
 	done
